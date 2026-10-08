@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florería Lunar Bloom - Acceso</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="Functions.js" defer></script>
+</head>
+<body class="login-body">
+
+    <main class="app-container">
+
+        <section class="brand-panel">
+            <div class="brand-header">
+                <img src="logo.jpg" alt="Logo Lunar Bloom" class="brand-logo">
+            </div>
+            
+            <div class="brand-illustration">
+                <div class="carousel-slides">
+                    <img src="1092263715907853115.jfif" alt="Ilustración 1" class="slide active">
+                    <img src="descargar.jfif" alt="Ilustración 2" class="slide">
+                    <img src="Sunflower by Daniel Wesler.jfif" alt="Ilustración 3" class="slide">
+                    <img src="1145321749004880571.jfif" alt="Ilustración 4" class="slide">
+                    <img src="62276407345525561.jfif" alt="Ilustración 5" class="slide">
+                </div>
+            </div>
+        </section>
+
+        <section class="form-panel">
+
+            <form id="loginForm" class="auth-form">
+                <h2>Iniciar Sesión</h2>
+
+                <div class="input-group">
+                    <input type="text" id="loginUsername" required placeholder=" ">
+                    <label for="loginUsername">Nombre de usuario</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="loginPassword" required placeholder=" ">
+                    <label for="loginPassword">Contraseña</label>
+                </div>
+
+                <button type="submit" class="btn-primary">Ingresar</button>
+
+                <div class="form-actions-row">
+                    <span class="account-link">¿No tienes cuenta? <a href="#" id="toRegisterLink">Registrarse</a></span>
+                    <a href="#" id="forgotPasswordLink" class="pill-btn">¿Olvidaste tu contraseña?</a>
+                </div>
+            </form>
+
+            <form id="registerForm" class="auth-form" hidden>
+                <h2>Crear Cuenta</h2>
+
+                <div class="input-group">
+                    <input type="text" id="regUsername" required placeholder=" ">
+                    <label for="regUsername">Nombre de usuario</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="regPassword" required placeholder=" ">
+                    <label for="regPassword">Contraseña</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="regQuestion" required placeholder=" ">
+                    <label for="regQuestion">Pregunta de seguridad</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="regAnswer" required placeholder=" ">
+                    <label for="regAnswer">Respuesta de seguridad</label>
+                </div>
+
+                <button type="submit" class="btn-primary">Registrarse</button>
+
+                <div class="form-actions-row">
+                    <span class="account-link">¿Ya tienes cuenta? <a href="#" id="toLoginLink">Inicia sesión</a></span>
+                </div>
+            </form>
+
+            <form id="recoveryForm" class="auth-form" hidden>
+                <h2>Recuperar Contraseña</h2>
+                <p id="recoveryQuestionText" class="question-text"></p>
+
+                <div class="input-group">
+                    <input type="text" id="recoveryAnswer" required placeholder=" ">
+                    <label for="recoveryAnswer">Tu respuesta</label>
+                </div>
+
+                <button type="submit" class="btn-primary">Verificar respuesta</button>
+
+                <div class="form-actions-row">
+                    <a href="#" id="cancelRecoveryLink" class="account-link">Volver al inicio de sesión</a>
+                </div>
+            </form>
+
+            <p id="statusMessage" class="status-message" aria-live="polite"></p>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

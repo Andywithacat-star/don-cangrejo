@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunar Bloom - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    :root {
+      --color-dark-green: #5E5C2D;
+      --color-olive-green: #999A57;
+      --color-orange-bright: #FC9C51;
+      --color-yellow-soft: #FEC67C;
+      --color-pink-soft: #F9BDB0;
+      --color-purple: #A16A84;
+      --color-white: #FFFFFF;
+      --color-bg-light: #F8F6F2;
+      --color-card-bg: #FAF6F0;
+      --color-text-dark: #232215;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    body {
+      display: flex;
+      background-color: var(--color-bg-light); 
+      color: var(--color-text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background-color: var(--color-white);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      border-right: 2px solid var(--color-pink-soft);
+      position: sticky;
+      top: 0;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .logo { display: flex; flex-direction: column; margin-bottom: 28px; padding-left: 12px; }
+    .logo-top { font-size: 16px; font-weight: 700; color: var(--color-purple); letter-spacing: 1.8px; }
+    .logo-bottom { font-size: 16px; font-weight: 700; color: var(--color-orange-bright); letter-spacing: 1.8px; margin-top: -4px; }
+
+    .nav-section { display: flex; flex-direction: column; gap: 8px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: var(--color-dark-green);
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: 16px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover { 
+      background-color: #FDF2F4; 
+      color: var(--color-purple); 
+    }
+
+    .nav-item.active {
+      background-color: var(--color-yellow-soft);
+      color: var(--color-dark-green) !important;
+      border-radius: 16px;
+      font-weight: 700;
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      padding: 28px 40px; 
+      position: relative; 
+      max-height: 100vh; 
+      overflow-y: auto; 
+    }
+
+    .search-bar {
+      background-color: var(--color-card-bg);
+      padding: 8px 18px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 320px;
+      border: 1px solid var(--color-yellow-soft);
+    }
+
+    .search-bar input { 
+      background: transparent; 
+      border: none; 
+      outline: none; 
+      width: 100%; 
+      font-size: 13px; 
+      color: var(--color-text-dark); 
+    }
+
+    .banner-welcome {
+      background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-dark-green) 100%);
+      padding: 24px 32px;
+      border-radius: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      color: var(--color-white);
+      box-shadow: 0 8px 20px rgba(161, 106, 132, 0.2);
+    }
+
+    .banner-welcome h2 { font-size: 20px; margin-bottom: 4px; color: var(--color-white); font-weight: 700; }
+
+    .page-view { display: none; }
+    .page-view.active-page { display: block; animation: pageEntrance 0.38s ease forwards; }
+
+    @keyframes pageEntrance {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background-color: var(--color-card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid #F3EDE2;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .section-title { font-size: 18px; color: var(--color-dark-green); margin-bottom: 16px; font-weight: 600; }
+
+    .custom-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .custom-table th { text-align: left; color: var(--color-purple); padding-bottom: 12px; border-bottom: 2px solid var(--color-pink-soft); }
+    .custom-table td { padding: 14px 0; border-top: 1px solid #EFEAE1; color: var(--color-text-dark); }
+
+    .input-inline {
+      width: 100%; padding: 8px 12px; border-radius: 12px;
+      border: 1px solid var(--color-olive-green); outline: none; font-size: 13px;
+      background-color: var(--color-white); color: var(--color-text-dark);
+    }
+
+    .input-inline:focus {
+      border-color: var(--color-orange-bright);
+    }
+
+    .btn-primary {
+      background-color: var(--color-orange-bright);
+      color: var(--color-white); 
+      border: none; 
+      padding: 10px 22px;
+      border-radius: 16px; 
+      font-weight: 700; 
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: var(--color-olive-green); 
+      color: var(--color-white);
+      border: none; 
+      padding: 6px 14px; 
+      border-radius: 10px;
+      font-size: 12px; 
+      font-weight: 600; 
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-dark-green);
+    }
+
+    .btn-status-active {
+      background-color: #22C55E;
+      color: var(--color-white);
+      border: none;
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-status-inactive {
+      background-color: #9CA3AF;
+      color: var(--color-white);
+      border: none;
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notif-container { position: relative; }
+
+    .notif-btn {
+      background-color: var(--color-card-bg);
+      border: 1px solid var(--color-yellow-soft);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .notif-btn:hover { background-color: var(--color-yellow-soft); }
+
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px;
+      background-color: #E53E3E; color: white;
+      font-size: 10px; font-weight: 700;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--color-white);
+    }
+
+    .notif-dropdown {
+      position: absolute; right: 0; top: 48px;
+      width: 280px; background-color: var(--color-white);
+      border: 1px solid var(--color-pink-soft);
+      border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      display: none; z-index: 50; overflow: hidden;
+    }
+
+    .notif-dropdown.show { display: block; animation: pageEntrance 0.2s ease forwards; }
+
+    .notif-header {
+      padding: 12px 16px; background-color: var(--color-card-bg);
+      border-bottom: 1px solid #EFEAE1; font-weight: 700; font-size: 13px; color: var(--color-purple);
+    }
+
+    .notif-body { max-height: 240px; overflow-y: auto; }
+
+    .notif-item {
+      padding: 12px 16px; border-bottom: 1px solid #EFEAE1;
+      font-size: 12px; color: var(--color-text-dark);
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item-empty { padding: 16px; text-align: center; font-size: 12px; color: var(--color-olive-green); }
+
+    #toast-notification {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--color-pink-soft); 
+      color: var(--color-dark-green); 
+      padding: 12px 20px; border-radius: 14px; 
+      font-weight: 700; display: flex; align-items: center; gap: 10px; 
+      transform: translateY(100px); opacity: 0; 
+      transition: all 0.3s ease; z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #toast-notification.show { transform: translateY(0); opacity: 1; }
+
+    .avatar-preset {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex; justify-content: center;
+      font-size: 20px;
+      background-color: var(--color-white);
+      transition: all 0.2s;
+    }
+    .avatar-preset:hover, .avatar-preset.selected {
+      border-color: var(--color-orange-bright);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || currentUser.role !== 'admin') {
+      window.location.href = 'Login.html';
+    }
+  </script>
+
+  <nav class="sidebar">
+    <div class="logo">
+      <span class="logo-top">SECRET</span>
+      <span class="logo-bottom">GARDEN</span>
+    </div>
+
+    <div class="nav-section">
+      <a class="nav-item active" onclick="switchPage('dashboard', this)"><span>Dashboard</span></a>
+      <a class="nav-item" onclick="switchPage('stock', this)"><span>Inventario / Stock</span></a>
+      <a class="nav-item" onclick="switchPage('precios', this)"><span>Modificar Precios</span></a>
+      <a class="nav-item" onclick="switchPage('ofertas', this)"><span>Ofertas y Cupones</span></a>
+      <a class="nav-item" onclick="switchPage('horarios', this)"><span>Gestionar Horarios</span></a>
+      <a class="nav-item" onclick="switchPage('resumen', this)"><span>Resumen General</span></a>
+    </div>
+
+    <div class="nav-section mt-auto">
+      <a class="nav-item" onclick="switchPage('cuenta', this)"><span>👤 Mi Cuenta</span></a>
+      <a class="nav-item" onclick="logout()"><span>🚪 Cerrar Sesión</span></a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <header class="flex justify-between items-center mb-6">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="globalSearch" placeholder="Buscar flores..." onkeyup="filterGlobal(this.value)">
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="notif-container">
+          <button class="notif-btn" onclick="toggleNotifDropdown()">
+            🔔
+            <span class="notif-badge" id="notifBadge" style="display: none;">0</span>
+          </button>
+          
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">Notificaciones de Stock</div>
+            <div class="notif-body" id="notifList"></div>
+          </div>
+        </div>
+
+        <div id="headerAvatarContainer" class="w-10 h-10 rounded-full bg-[#FC9C51] text-white flex items-center justify-center font-bold overflow-hidden border-2 border-[#F9BDB0]">
+         
+        </div>
+        <span class="font-semibold text-sm text-[#5E5C2D]" id="adminDisplayName">Admin</span>
+      </div>
+    </header>
+
+    <section class="banner-welcome">
+      <div>
+        <h2>Panel de Administración - Lunar Bloom</h2>
+        <p class="text-sm opacity-90">Control e inventario en tiempo real sincronizado en LocalStorage.</p>
+      </div>
+      <button class="btn-primary" onclick="saveAllChanges()">Guardar Cambios</button>
+    </section>
+
+    <div id="page-dashboard" class="page-view active-page">
+      <h3 class="section-title">🏠 Dashboard Principal</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="card">
+          <h4 class="text-sm font-semibold text-[#A16A84]">Flores Registradas</h4>
+          <p class="text-2xl font-bold text-[#FC9C51]" id="dash-total-flowers">0 Especies</p>
+        </div>
+        <div class="card">
+          <h4 class="text-sm font-semibold text-[#A16A84]">Stock Bajo (&lt;10)</h4>
+          <p class="text-2xl font-bold text-[#FC9C51]" id="dash-low-stock">0 Especies</p>
+        </div>
+        <div class="card">
+          <h4 class="text-sm font-semibold text-[#A16A84]">Total Unidades Stock</h4>
+          <p class="text-2xl font-bold text-[#999A57]" id="dash-total-units">0 unidades</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-stock" class="page-view">
+      <h3 class="section-title">🌿 Inventario de Stock</h3>
+      <div class="card">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Flor</th>
+              <th>Familia</th>
+              <th>Stock Actual</th>
+              <th>Ajustar</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-precios" class="page-view">
+      <h3 class="section-title">🏷️ Modificar Precios</h3>
+      <div class="card">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio Actual</th>
+              <th>Nuevo Precio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="prices-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div id="page-ofertas" class="page-view">
+      <h3 class="section-title">🎉 Ofertas y Cupones</h3>
+      
+      <div class="card mb-8">
+        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm">Crear Nueva Promoción</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Nombre de la Promoción</label>
+            <input type="text" id="promoName" class="input-inline" placeholder="Ej. San Valentín">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Descuento (%)</label>
+            <input type="number" id="promoDiscount" class="input-inline" placeholder="Ej. 20" min="1" max="100">
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button class="btn-primary" onclick="addPromotion()">Guardar</button>
+        </div>
+      </div>
+
+      <hr class="border-t-2 border-[#F9BDB0] my-6">
+
+      <div class="card">
+        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm">Promociones Creadas</h4>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Promoción</th>
+              <th>Descuento</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="promotions-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-horarios" class="page-view">
+      <h3 class="section-title">⏰ Gestionar Horarios de Atención</h3>
+      
+      <div class="card max-w-2xl">
+        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm">Configuración de Horario Semanal</h4>
+        
+        <div class="space-y-4">
+         
+          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <span class="font-bold text-sm text-[#5E5C2D] block">Lunes a Viernes</span>
+              <span class="text-xs text-[#999A57]">Horario regular de apertura y cierre</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="time" id="weekdayOpen" class="input-inline" style="width: 110px;" value="09:30">
+              <span class="text-xs font-bold text-[#A16A84]">a</span>
+              <input type="time" id="weekdayClose" class="input-inline" style="width: 110px;" value="19:00">
+            </div>
+          </div>
+
+          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <span class="font-bold text-sm text-[#5E5C2D] block">Sábado</span>
+              <span class="text-xs text-[#999A57]">Configuración de fin de semana</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div id="satTimeInputs" class="flex items-center gap-2">
+                <input type="time" id="satOpen" class="input-inline" style="width: 110px;" value="10:00">
+                <span class="text-xs font-bold text-[#A16A84]">a</span>
+                <input type="time" id="satClose" class="input-inline" style="width: 110px;" value="14:00">
+              </div>
+              <button id="satStatusBtn" class="btn-status-active" onclick="toggleDayStatus('sat')">Abierto</button>
+            </div>
+          </div>
+
+          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <span class="font-bold text-sm text-[#5E5C2D] block">Domingo</span>
+              <span class="text-xs text-[#999A57]">Configuración de fin de semana</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div id="sunTimeInputs" class="flex items-center gap-2" style="opacity: 0.5; pointer-events: none;">
+                <input type="time" id="sunOpen" class="input-inline" style="width: 110px;" value="10:00">
+                <span class="text-xs font-bold text-[#A16A84]">a</span>
+                <input type="time" id="sunClose" class="input-inline" style="width: 110px;" value="14:00">
+              </div>
+              <button id="sunStatusBtn" class="btn-status-inactive" onclick="toggleDayStatus('sun')">Cerrado</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button class="btn-primary" onclick="saveSchedule()">Guardar Horarios</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-cuenta" class="page-view">
+      <h3 class="section-title">👤 Configuración de Mi Cuenta</h3>
+      
+      <div class="card max-w-lg">
+        <div class="flex flex-col items-center mb-6">
+          <div id="profilePreviewContainer" class="w-24 h-24 rounded-full bg-[#FC9C51] text-white flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden border-4 border-[#F9BDB0] mb-3">
+       
+          </div>
+          <span class="text-xs font-semibold text-[#A16A84]">Vista previa de Perfil</span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#5E5C2D] mb-1">Nombre de Usuario</label>
+            <input type="text" id="editUsername" class="input-inline" placeholder="Ingresa tu nombre">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#5E5C2D] mb-1">Subir Foto de Perfil</label>
+            <input type="file" id="editProfilePic" accept="image/*" class="input-inline" onchange="handleImageUpload(event)">
+            <p class="text-[11px] text-[#999A57] mt-1">Formatos soportados: JPG, PNG o GIF.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#5E5C2D] mb-2">O elige un Avatar Rápido</label>
+            <div class="flex gap-3">
+              <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌸')">🌸</button>
+              <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌿')">🌿</button>
+              <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌺')">🌺</button>
+              <button type="button" class="avatar-preset" onclick="selectPresetAvatar('👑')">👑</button>
+              <button type="button" class="avatar-preset" onclick="selectPresetAvatar('✨')">✨</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-between items-center">
+          <button class="btn-secondary" style="background-color: #E53E3E;" onclick="logout()">Cerrar Sesión</button>
+          <button class="btn-primary" onclick="saveProfileChanges()">Guardar Perfil</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-notification">🌸 <span id="toast-text">Notificación</span></div>
+
+  <script>
+   
+    let selectedAvatarType = 'emoji'; 
+    let selectedAvatarValue = '🌸';
+
+    let flowerInventory = JSON.parse(localStorage.getItem('lunarBloomInventory')) || [
+      { id: 1, name: "Tulipán Silvestre", icon: "🌷", family: "Liliaceae", price: 18.00, stock: 42 },
+      { id: 2, name: "Flor de Loto", icon: "🪷", family: "Nelumbonaceae", price: 22.00, stock: 8 },
+      { id: 3, name: "Angel Trumpet", icon: "🌺", family: "Solanaceae", price: 28.50, stock: 12 },
+      { id: 4, name: "Girasol Botánico", icon: "🌻", family: "Asteraceae", price: 15.00, stock: 65 },
+      { id: 5, name: "Orquídea Silvestre", icon: "🪻", family: "Orchidaceae", price: 35.00, stock: 5 }
+    ];
+
+    let promotions = JSON.parse(localStorage.getItem('lunarBloomPromotions')) || [
+      { id: 1, name: "San Valentín", discount: 20, active: false }
+    ];
+
+    let scheduleData = JSON.parse(localStorage.getItem('lunarBloomSchedule')) || {
+      weekdays: { open: "09:30", close: "19:00" },
+      saturday: { open: "10:00", close: "14:00", isOpen: true },
+      sunday: { open: "10:00", close: "14:00", isOpen: false }
+    };
+
+    function saveInventory() {
+      localStorage.setItem('lunarBloomInventory', JSON.stringify(flowerInventory));
+      renderNotifications();
+    }
+
+    function savePromotions() {
+      localStorage.setItem('lunarBloomPromotions', JSON.stringify(promotions));
+      renderPricesTable();
+    }
+
+    function switchPage(pageId, clickedElement) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active-page');
+
+      if (clickedElement) {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        clickedElement.classList.add('active');
+      }
+    }
+
+    function loadUserProfile() {
+      if (!currentUser) return;
+
+      document.getElementById('editUsername').value = currentUser.username || 'Admin';
+      selectedAvatarType = currentUser.avatarType || 'emoji';
+      selectedAvatarValue = currentUser.avatarValue || '🌸';
+
+      updateAvatarDisplay();
+    }
+
+    function updateAvatarDisplay() {
+      const headerContainer = document.getElementById('headerAvatarContainer');
+      const profileContainer = document.getElementById('profilePreviewContainer');
+      const displayName = document.getElementById('adminDisplayName');
+
+      displayName.textContent = currentUser.username || 'Admin';
+
+      let avatarHTML = '';
+      if (selectedAvatarType === 'image') {
+        avatarHTML = `<img src="${selectedAvatarValue}" class="w-full h-full object-cover">`;
+      } else {
+        avatarHTML = `<span>${selectedAvatarValue}</span>`;
+      }
+
+      headerContainer.innerHTML = avatarHTML;
+      profileContainer.innerHTML = avatarHTML;
+    }
+
+    function selectPresetAvatar(emoji) {
+      selectedAvatarType = 'emoji';
+      selectedAvatarValue = emoji;
+      document.getElementById('editProfilePic').value = '';
+      updateAvatarDisplay();
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          selectedAvatarType = 'image';
+          selectedAvatarValue = e.target.result;
+          updateAvatarDisplay();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveProfileChanges() {
+      const newName = document.getElementById('editUsername').value.trim();
+
+      if (!newName) {
+        showToast("⚠️ El nombre de usuario no puede estar vacío");
+        return;
+      }
+
+      currentUser.username = newName;
+      currentUser.avatarType = selectedAvatarType;
+      currentUser.avatarValue = selectedAvatarValue;
+
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+      let users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+      const userIndex = users.findIndex(u => u.username === currentUser.username || u.id === currentUser.id);
+      if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+        localStorage.setItem('lunarBloomUsers', JSON.stringify(users));
+      }
+
+      updateAvatarDisplay();
+      showToast("✨ Perfil actualizado correctamente");
+    }
+
+    function renderStockTable() {
+      const tbody = document.getElementById('stock-table-body');
+      tbody.innerHTML = '';
+      flowerInventory.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.icon} ${item.name}</td>
+          <td>${item.family}</td>
+          <td class="font-bold text-[#FC9C51]">${item.stock} uds</td>
+          <td><input type="number" class="input-inline" style="width: 90px;" id="stock-${item.id}" value="${item.stock}"></td>
+          <td><button class="btn-secondary" onclick="updateStock(${item.id})">Guardar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateStats();
+    }
+
+    function updateStock(id) {
+      const val = parseInt(document.getElementById(`stock-${id}`).value);
+      const flower = flowerInventory.find(f => f.id === id);
+      if (flower && !isNaN(val) && val >= 0) {
+        flower.stock = val;
+        saveInventory();
+        renderStockTable();
+        showToast(`Stock de ${flower.name} actualizado`);
+      }
+    }
+
+    function renderPricesTable() {
+      const tbody = document.getElementById('prices-table-body');
+      tbody.innerHTML = '';
+
+      const activePromo = promotions.find(p => p.active);
+
+      flowerInventory.forEach(item => {
+        let priceDisplay = `$${item.price.toFixed(2)}`;
+        
+        if (activePromo) {
+          const discountedPrice = item.price * (1 - activePromo.discount / 100);
+          priceDisplay = `<span class="line-through text-xs text-gray-400 mr-2">$${item.price.toFixed(2)}</span>
+                          <span class="font-bold text-[#FC9C51]">$${discountedPrice.toFixed(2)} (-${activePromo.discount}%)</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.icon} ${item.name}</td>
+          <td>${priceDisplay}</td>
+          <td><input type="number" step="0.5" class="input-inline" style="width: 90px;" id="price-${item.id}" value="${item.price}"></td>
+          <td><button class="btn-secondary" onclick="updatePrice(${item.id})">Actualizar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updatePrice(id) {
+      const val = parseFloat(document.getElementById(`price-${id}`).value);
+      const flower = flowerInventory.find(f => f.id === id);
+      if (flower && !isNaN(val) && val > 0) {
+        flower.price = val;
+        saveInventory();
+        renderPricesTable();
+        showToast(`Precio de ${flower.name} actualizado`);
+      }
+    }
+
+    function addPromotion() {
+      const nameInput = document.getElementById('promoName');
+      const discountInput = document.getElementById('promoDiscount');
+
+      const name = nameInput.value.trim();
+      const discount = parseFloat(discountInput.value);
+
+      if (!name) {
+        showToast("⚠️ Ingresa un nombre para la promoción");
+        return;
+      }
+      if (isNaN(discount) || discount <= 0 || discount > 100) {
+        showToast("⚠️ Ingresa un porcentaje de descuento válido (1-100)");
+        return;
+      }
+
+      const newPromo = {
+        id: Date.now(),
+        name: name,
+        discount: discount,
+        active: false
+      };
+
+      promotions.push(newPromo);
+      savePromotions();
+      renderPromotionsTable();
+
+      nameInput.value = '';
+      discountInput.value = '';
+      showToast(`✨ Promoción "${name}" creada`);
+    }
+
+    function renderPromotionsTable() {
+      const tbody = document.getElementById('promotions-table-body');
+      tbody.innerHTML = '';
+
+      if (promotions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-xs py-4 text-[#999A57]">No hay promociones creadas aún.</td></tr>`;
+        return;
+      }
+
+      promotions.forEach(promo => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="font-semibold">${promo.name}</td>
+          <td>${promo.discount}%</td>
+          <td>
+            <button class="${promo.active ? 'btn-status-active' : 'btn-status-inactive'}" onclick="togglePromotion(${promo.id})">
+              ${promo.active ? 'Activo' : 'Inactivo'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function togglePromotion(id) {
+      promotions.forEach(p => {
+        if (p.id === id) {
+          p.active = !p.active;
+        } else {
+          p.active = false;
+        }
+      });
+
+      savePromotions();
+      renderPromotionsTable();
+      showToast('Estado de promoción actualizado');
+    }
+
+    function loadScheduleInputs() {
+      document.getElementById('weekdayOpen').value = scheduleData.weekdays.open;
+      document.getElementById('weekdayClose').value = scheduleData.weekdays.close;
+
+      document.getElementById('satOpen').value = scheduleData.saturday.open;
+      document.getElementById('satClose').value = scheduleData.saturday.close;
+
+      document.getElementById('sunOpen').value = scheduleData.sunday.open;
+      document.getElementById('sunClose').value = scheduleData.sunday.close;
+
+      updateDayUI('sat', scheduleData.saturday.isOpen);
+      updateDayUI('sun', scheduleData.sunday.isOpen);
+    }
+
+    function toggleDayStatus(day) {
+      if (day === 'sat') {
+        scheduleData.saturday.isOpen = !scheduleData.saturday.isOpen;
+        updateDayUI('sat', scheduleData.saturday.isOpen);
+      } else if (day === 'sun') {
+        scheduleData.sunday.isOpen = !scheduleData.sunday.isOpen;
+        updateDayUI('sun', scheduleData.sunday.isOpen);
+      }
+    }
+
+    function updateDayUI(day, isOpen) {
+      const btn = document.getElementById(`${day}StatusBtn`);
+      const inputs = document.getElementById(`${day}TimeInputs`);
+
+      if (isOpen) {
+        btn.className = 'btn-status-active';
+        btn.textContent = 'Abierto';
+        inputs.style.opacity = '1';
+        inputs.style.pointerEvents = 'auto';
+      } else {
+        btn.className = 'btn-status-inactive';
+        btn.textContent = 'Cerrado';
+        inputs.style.opacity = '0.5';
+        inputs.style.pointerEvents = 'none';
+      }
+    }
+
+    function saveSchedule() {
+      scheduleData.weekdays.open = document.getElementById('weekdayOpen').value;
+      scheduleData.weekdays.close = document.getElementById('weekdayClose').value;
+
+      scheduleData.saturday.open = document.getElementById('satOpen').value;
+      scheduleData.saturday.close = document.getElementById('satClose').value;
+
+      scheduleData.sunday.open = document.getElementById('sunOpen').value;
+      scheduleData.sunday.close = document.getElementById('sunClose').value;
+
+      localStorage.setItem('lunarBloomSchedule', JSON.stringify(scheduleData));
+      showToast('⏰ Horarios actualizados con éxito');
+    }
+
+    function updateStats() {
+      document.getElementById('dash-total-flowers').textContent = `${flowerInventory.length} Especies`;
+      document.getElementById('dash-low-stock').textContent = `${flowerInventory.filter(f => f.stock < 10).length} Especies`;
+      document.getElementById('dash-total-units').textContent = `${flowerInventory.reduce((a, b) => a + b.stock, 0)} unidades`;
+    }
+
+    function renderNotifications() {
+      const notifList = document.getElementById('notifList');
+      const badge = document.getElementById('notifBadge');
+      
+      const lowStockFlowers = flowerInventory.filter(f => f.stock < 10);
+      notifList.innerHTML = '';
+
+      if (lowStockFlowers.length === 0) {
+        notifList.innerHTML = '<div class="notif-item-empty">Sin alertas de poco stock</div>';
+        badge.style.display = 'none';
+      } else {
+        lowStockFlowers.forEach(flower => {
+          const item = document.createElement('div');
+          item.className = 'notif-item';
+          item.innerHTML = `
+            <span>⚠️</span>
+            <div>
+              Quedan pocas unidades de <b>${flower.name}</b> (Quedan: <b>${flower.stock}</b> unidades)
+            </div>
+          `;
+          notifList.appendChild(item);
+        });
+
+        badge.textContent = lowStockFlowers.length;
+        badge.style.display = 'flex';
+      }
+    }
+
+    function toggleNotifDropdown() {
+      const dropdown = document.getElementById('notifDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    document.addEventListener('click', function(event) {
+      const container = document.querySelector('.notif-container');
+      if (container && !container.contains(event.target)) {
+        document.getElementById('notifDropdown').classList.remove('show');
+      }
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-text').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function saveAllChanges() {
+      saveInventory();
+      savePromotions();
+      saveSchedule();
+      showToast('✨ Cambios guardados en LocalStorage');
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = 'Login.html';
+    }
+
+    window.onload = function() {
+      saveInventory();
+      savePromotions();
+      renderStockTable();
+      renderPricesTable();
+      renderPromotionsTable();
+      loadScheduleInputs();
+      loadUserProfile();
+    };
+  </script>
+</body>
+</html>
