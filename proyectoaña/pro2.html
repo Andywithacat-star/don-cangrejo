@@ -63,6 +63,7 @@
       border-radius: 16px;
       transition: all 0.2s ease;
       cursor: pointer;
+      user-select: none;
     }
 
     .nav-item:hover { 
@@ -139,7 +140,7 @@
 
     .custom-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .custom-table th { text-align: left; color: var(--color-purple); padding-bottom: 12px; border-bottom: 2px solid var(--color-pink-soft); }
-    .custom-table td { padding: 14px 0; border-top: 1px solid #EFEAE1; color: var(--color-text-dark); }
+    .custom-table td { padding: 14px 0; border-top: 1px solid #EFEAE1; color: var(--color-text-dark); vertical-align: middle; }
 
     .input-inline {
       width: 100%; padding: 8px 12px; border-radius: 12px;
@@ -180,6 +181,22 @@
 
     .btn-secondary:hover {
       background-color: var(--color-dark-green);
+    }
+
+    .btn-danger {
+      background-color: #E53E3E;
+      color: var(--color-white);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-danger:hover {
+      background-color: #C53030;
     }
 
     .btn-status-active {
@@ -268,18 +285,78 @@
     #toast-notification.show { transform: translateY(0); opacity: 1; }
 
     .avatar-preset {
-      width: 44px; height: 44px;
+      width: 48px; height: 48px;
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
-      display: flex; justify-content: center;
-      font-size: 20px;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 24px;
       background-color: var(--color-white);
       transition: all 0.2s;
     }
     .avatar-preset:hover, .avatar-preset.selected {
       border-color: var(--color-orange-bright);
       transform: scale(1.1);
+    }
+
+    /* Estilos del carrusel */
+    .dashboard-carousel {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--color-yellow-soft);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .dashboard-carousel img.dash-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    .dashboard-carousel img.dash-slide.active {
+      opacity: 1;
+    }
+
+    .flower-img-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--color-pink-soft);
+      display: inline-block;
+    }
+
+    /* Pestañas horizontales para Resumen General */
+    .tab-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 14px;
+      color: var(--color-dark-green);
+      background-color: var(--color-card-bg);
+      border: 1px solid var(--color-yellow-soft);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .tab-btn:hover {
+      background-color: #FDF2F4;
+      color: var(--color-purple);
+    }
+
+    .tab-btn.active-tab {
+      background-color: var(--color-orange-bright);
+      color: var(--color-white);
+      border-color: var(--color-orange-bright);
     }
   </style>
 </head>
@@ -299,17 +376,17 @@
     </div>
 
     <div class="nav-section">
-      <a class="nav-item active" onclick="switchPage('dashboard', this)"><span>Dashboard</span></a>
-      <a class="nav-item" onclick="switchPage('stock', this)"><span>Inventario / Stock</span></a>
-      <a class="nav-item" onclick="switchPage('precios', this)"><span>Modificar Precios</span></a>
-      <a class="nav-item" onclick="switchPage('ofertas', this)"><span>Ofertas y Cupones</span></a>
-      <a class="nav-item" onclick="switchPage('horarios', this)"><span>Gestionar Horarios</span></a>
-      <a class="nav-item" onclick="switchPage('resumen', this)"><span>Resumen General</span></a>
+      <a class="nav-item active select-none" onclick="switchPage('dashboard', this)"><span>Dashboard</span></a>
+      <a class="nav-item select-none" onclick="switchPage('stock', this)"><span>Inventario / Stock</span></a>
+      <a class="nav-item select-none" onclick="switchPage('precios', this)"><span>Modificar Precios</span></a>
+      <a class="nav-item select-none" onclick="switchPage('ofertas', this)"><span>Ofertas y Cupones</span></a>
+      <a class="nav-item select-none" onclick="switchPage('horarios', this)"><span>Gestionar Horarios</span></a>
+      <a class="nav-item select-none" onclick="switchPage('resumen', this)"><span>Resumen General</span></a>
     </div>
 
     <div class="nav-section mt-auto">
-      <a class="nav-item" onclick="switchPage('cuenta', this)"><span>👤 Mi Cuenta</span></a>
-      <a class="nav-item" onclick="logout()"><span>🚪 Cerrar Sesión</span></a>
+      <a class="nav-item select-none" onclick="switchPage('cuenta', this)"><span>👤 Mi Cuenta</span></a>
+      <a class="nav-item select-none" onclick="logout()"><span>🚪 Cerrar Sesión</span></a>
     </div>
   </nav>
 
@@ -364,19 +441,75 @@
           <p class="text-2xl font-bold text-[#999A57]" id="dash-total-units">0 unidades</p>
         </div>
       </div>
+
+      <hr class="border-t-2 border-[#F9BDB0] my-8">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <div class="card flex flex-col items-center justify-center text-center p-6">
+          <img src="logo.jpg" alt="Logo Secret Garden" class="w-24 h-24 rounded-full border-4 border-[#FC9C51] shadow-md object-cover mb-3">
+          <div class="flex flex-col items-center">
+            <span class="text-lg font-bold text-[#A16A84] tracking-widest">SECRET</span>
+            <span class="text-lg font-bold text-[#FC9C51] tracking-widest -mt-1">GARDEN</span>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <div class="dashboard-carousel" id="dashboardCarousel">
+            <img src="1092263715907853115.jfif" alt="Ilustración 1" class="dash-slide active">
+            <img src="descargar.jfif" alt="Ilustración 2" class="dash-slide">
+            <img src="Sunflower by Daniel Wesler.jfif" alt="Ilustración 3" class="dash-slide">
+            <img src="1145321749004880571.jfif" alt="Ilustración 4" class="dash-slide">
+            <img src="62276407345525561.jfif" alt="Ilustración 5" class="dash-slide">
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- INVENTARIO / STOCK -->
     <div id="page-stock" class="page-view">
       <h3 class="section-title">🌿 Inventario de Stock</h3>
+      
+      <!-- FORMULARIO REGISTRAR NUEVA FLOR -->
+      <div class="card mb-6">
+        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm">Registrar Nueva Flor</h4>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Nombre</label>
+            <input type="text" id="newFlowerName" class="input-inline" placeholder="Ej. Rosa Roja">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Familia</label>
+            <input type="text" id="newFlowerFamily" class="input-inline" placeholder="Ej. Rosaceae">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Precio ($)</label>
+            <input type="number" step="0.5" id="newFlowerPrice" class="input-inline" placeholder="Ej. 25.00">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Stock Inicial</label>
+            <input type="number" id="newFlowerStock" class="input-inline" placeholder="Ej. 20">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#A16A84] mb-1">Imagen / Foto</label>
+            <input type="file" id="newFlowerImg" accept="image/*" class="input-inline text-xs">
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button class="btn-primary" onclick="addFlower()">+ Agregar Flor</button>
+        </div>
+      </div>
+
+      <!-- TABLA INVENTARIO -->
       <div class="card">
         <table class="custom-table">
           <thead>
             <tr>
+              <th>Imagen</th>
               <th>Flor</th>
               <th>Familia</th>
               <th>Stock Actual</th>
               <th>Ajustar</th>
-              <th>Acción</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="stock-table-body"></tbody>
@@ -384,6 +517,7 @@
       </div>
     </div>
 
+    <!-- MODIFICAR PRECIOS -->
     <div id="page-precios" class="page-view">
       <h3 class="section-title">🏷️ Modificar Precios</h3>
       <div class="card">
@@ -401,7 +535,6 @@
       </div>
     </div>
 
-    
     <div id="page-ofertas" class="page-view">
       <h3 class="section-title">🎉 Ofertas y Cupones</h3>
       
@@ -439,89 +572,114 @@
       </div>
     </div>
 
+    <!-- GESTIONAR HORARIOS (CENTRADO Y AGRANDADO) -->
     <div id="page-horarios" class="page-view">
-      <h3 class="section-title">⏰ Gestionar Horarios de Atención</h3>
+      <h3 class="section-title text-center text-xl mb-6">⏰ Gestionar Horarios de Atención</h3>
       
-      <div class="card max-w-2xl">
-        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm">Configuración de Horario Semanal</h4>
+      <div class="card max-w-4xl mx-auto p-8 shadow-lg">
+        <h4 class="font-bold text-[#5E5C2D] mb-6 text-base text-center">Configuración de Horario Semanal</h4>
         
-        <div class="space-y-4">
-         
-          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="space-y-6">
+          <div class="p-5 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span class="font-bold text-sm text-[#5E5C2D] block">Lunes a Viernes</span>
-              <span class="text-xs text-[#999A57]">Horario regular de apertura y cierre</span>
+              <span class="font-bold text-base text-[#5E5C2D] block">Lunes a Viernes</span>
+              <span class="text-sm text-[#999A57]">Horario regular de apertura y cierre</span>
             </div>
-            <div class="flex items-center gap-2">
-              <input type="time" id="weekdayOpen" class="input-inline" style="width: 110px;" value="09:30">
-              <span class="text-xs font-bold text-[#A16A84]">a</span>
-              <input type="time" id="weekdayClose" class="input-inline" style="width: 110px;" value="19:00">
+            <div class="flex items-center gap-3">
+              <input type="time" id="weekdayOpen" class="input-inline text-sm" style="width: 130px;" value="09:30">
+              <span class="text-sm font-bold text-[#A16A84]">a</span>
+              <input type="time" id="weekdayClose" class="input-inline text-sm" style="width: 130px;" value="19:00">
             </div>
           </div>
 
-          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="p-5 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span class="font-bold text-sm text-[#5E5C2D] block">Sábado</span>
-              <span class="text-xs text-[#999A57]">Configuración de fin de semana</span>
+              <span class="font-bold text-base text-[#5E5C2D] block">Sábado</span>
+              <span class="text-sm text-[#999A57]">Configuración de fin de semana</span>
             </div>
-            <div class="flex items-center gap-3">
-              <div id="satTimeInputs" class="flex items-center gap-2">
-                <input type="time" id="satOpen" class="input-inline" style="width: 110px;" value="10:00">
-                <span class="text-xs font-bold text-[#A16A84]">a</span>
-                <input type="time" id="satClose" class="input-inline" style="width: 110px;" value="14:00">
+            <div class="flex items-center gap-4">
+              <div id="satTimeInputs" class="flex items-center gap-3">
+                <input type="time" id="satOpen" class="input-inline text-sm" style="width: 130px;" value="10:00">
+                <span class="text-sm font-bold text-[#A16A84]">a</span>
+                <input type="time" id="satClose" class="input-inline text-sm" style="width: 130px;" value="14:00">
               </div>
               <button id="satStatusBtn" class="btn-status-active" onclick="toggleDayStatus('sat')">Abierto</button>
             </div>
           </div>
 
-          <div class="p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="p-5 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span class="font-bold text-sm text-[#5E5C2D] block">Domingo</span>
-              <span class="text-xs text-[#999A57]">Configuración de fin de semana</span>
+              <span class="font-bold text-base text-[#5E5C2D] block">Domingo</span>
+              <span class="text-sm text-[#999A57]">Configuración de fin de semana</span>
             </div>
-            <div class="flex items-center gap-3">
-              <div id="sunTimeInputs" class="flex items-center gap-2" style="opacity: 0.5; pointer-events: none;">
-                <input type="time" id="sunOpen" class="input-inline" style="width: 110px;" value="10:00">
-                <span class="text-xs font-bold text-[#A16A84]">a</span>
-                <input type="time" id="sunClose" class="input-inline" style="width: 110px;" value="14:00">
+            <div class="flex items-center gap-4">
+              <div id="sunTimeInputs" class="flex items-center gap-3" style="opacity: 0.5; pointer-events: none;">
+                <input type="time" id="sunOpen" class="input-inline text-sm" style="width: 130px;" value="10:00">
+                <span class="text-sm font-bold text-[#A16A84]">a</span>
+                <input type="time" id="sunClose" class="input-inline text-sm" style="width: 130px;" value="14:00">
               </div>
               <button id="sunStatusBtn" class="btn-status-inactive" onclick="toggleDayStatus('sun')">Cerrado</button>
             </div>
           </div>
         </div>
 
-        <div class="mt-6 flex justify-end">
-          <button class="btn-primary" onclick="saveSchedule()">Guardar Horarios</button>
+        <div class="mt-8 flex justify-center">
+          <button class="btn-primary px-8 py-3 text-base" onclick="saveSchedule()">Guardar Horarios</button>
         </div>
       </div>
     </div>
 
-    <div id="page-cuenta" class="page-view">
-      <h3 class="section-title">👤 Configuración de Mi Cuenta</h3>
+    <!-- RESUMEN GENERAL -->
+    <div id="page-resumen" class="page-view">
+      <h3 class="section-title">📊 Resumen General de Cambios y Modificaciones</h3>
       
-      <div class="card max-w-lg">
-        <div class="flex flex-col items-center mb-6">
-          <div id="profilePreviewContainer" class="w-24 h-24 rounded-full bg-[#FC9C51] text-white flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden border-4 border-[#F9BDB0] mb-3">
+      <!-- BARRA DE NAVEGACIÓN HORIZONTAL DE APARTADOS -->
+      <div class="flex flex-wrap gap-2 mb-6 p-2 bg-[#FAF6F0] rounded-2xl border border-[#F3EDE2]">
+        <button class="tab-btn active-tab" onclick="filterLogs('todos', this)">Todos los Cambios</button>
+        <button class="tab-btn" onclick="filterLogs('dashboard', this)">Dashboard</button>
+        <button class="tab-btn" onclick="filterLogs('stock', this)">Inventario / Stock</button>
+        <button class="tab-btn" onclick="filterLogs('precios', this)">Modificar Precios</button>
+        <button class="tab-btn" onclick="filterLogs('ofertas', this)">Ofertas y Cupones</button>
+        <button class="tab-btn" onclick="filterLogs('horarios', this)">Gestionar Horarios</button>
+        <button class="tab-btn" onclick="filterLogs('cuenta', this)">Mi Cuenta</button>
+      </div>
+
+      <!-- CONTENEDOR DE REGISTROS -->
+      <div class="card">
+        <h4 class="font-bold text-[#5E5C2D] mb-4 text-sm" id="logsTitle">Historial Completo de Actividades</h4>
+        <div id="logsContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+          <!-- Los logs se renderizan mediante JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MI CUENTA (PERFIL CENTRADO Y AGRANDADO) -->
+    <div id="page-cuenta" class="page-view">
+      <h3 class="section-title text-center text-xl mb-6">👤 Configuración de Mi Cuenta</h3>
+      
+      <div class="card max-w-2xl mx-auto p-8 shadow-lg">
+        <div class="flex flex-col items-center mb-8">
+          <div id="profilePreviewContainer" class="w-32 h-32 rounded-full bg-[#FC9C51] text-white flex items-center justify-center text-5xl font-bold shadow-lg overflow-hidden border-4 border-[#F9BDB0] mb-4">
        
           </div>
-          <span class="text-xs font-semibold text-[#A16A84]">Vista previa de Perfil</span>
+          <span class="text-sm font-semibold text-[#A16A84]">Vista previa de Perfil</span>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-6">
           <div>
-            <label class="block text-xs font-semibold text-[#5E5C2D] mb-1">Nombre de Usuario</label>
-            <input type="text" id="editUsername" class="input-inline" placeholder="Ingresa tu nombre">
+            <label class="block text-sm font-semibold text-[#5E5C2D] mb-2">Nombre de Usuario</label>
+            <input type="text" id="editUsername" class="input-inline text-sm py-3 px-4" placeholder="Ingresa tu nombre">
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-[#5E5C2D] mb-1">Subir Foto de Perfil</label>
-            <input type="file" id="editProfilePic" accept="image/*" class="input-inline" onchange="handleImageUpload(event)">
-            <p class="text-[11px] text-[#999A57] mt-1">Formatos soportados: JPG, PNG o GIF.</p>
+            <label class="block text-sm font-semibold text-[#5E5C2D] mb-2">Subir Foto de Perfil</label>
+            <input type="file" id="editProfilePic" accept="image/*" class="input-inline text-sm py-2 px-3" onchange="handleImageUpload(event)">
+            <p class="text-xs text-[#999A57] mt-1">Formatos soportados: JPG, PNG o GIF.</p>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-[#5E5C2D] mb-2">O elige un Avatar Rápido</label>
-            <div class="flex gap-3">
+            <label class="block text-sm font-semibold text-[#5E5C2D] mb-3">O elige un Avatar Rápido</label>
+            <div class="flex justify-center gap-4">
               <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌸')">🌸</button>
               <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌿')">🌿</button>
               <button type="button" class="avatar-preset" onclick="selectPresetAvatar('🌺')">🌺</button>
@@ -531,9 +689,9 @@
           </div>
         </div>
 
-        <div class="mt-8 flex justify-between items-center">
-          <button class="btn-secondary" style="background-color: #E53E3E;" onclick="logout()">Cerrar Sesión</button>
-          <button class="btn-primary" onclick="saveProfileChanges()">Guardar Perfil</button>
+        <div class="mt-10 flex justify-between items-center">
+          <button class="btn-secondary py-3 px-6 text-sm" style="background-color: #E53E3E;" onclick="logout()">Cerrar Sesión</button>
+          <button class="btn-primary py-3 px-8 text-sm" onclick="saveProfileChanges()">Guardar Perfil</button>
         </div>
       </div>
     </div>
@@ -542,16 +700,15 @@
   <div id="toast-notification">🌸 <span id="toast-text">Notificación</span></div>
 
   <script>
-   
     let selectedAvatarType = 'emoji'; 
     let selectedAvatarValue = '🌸';
 
     let flowerInventory = JSON.parse(localStorage.getItem('lunarBloomInventory')) || [
-      { id: 1, name: "Tulipán Silvestre", icon: "🌷", family: "Liliaceae", price: 18.00, stock: 42 },
-      { id: 2, name: "Flor de Loto", icon: "🪷", family: "Nelumbonaceae", price: 22.00, stock: 8 },
-      { id: 3, name: "Angel Trumpet", icon: "🌺", family: "Solanaceae", price: 28.50, stock: 12 },
-      { id: 4, name: "Girasol Botánico", icon: "🌻", family: "Asteraceae", price: 15.00, stock: 65 },
-      { id: 5, name: "Orquídea Silvestre", icon: "🪻", family: "Orchidaceae", price: 35.00, stock: 5 }
+      { id: 1, name: "Tulipán Silvestre", icon: "🌷", imageType: "emoji", family: "Liliaceae", price: 18.00, stock: 42 },
+      { id: 2, name: "Flor de Loto", icon: "🪷", imageType: "emoji", family: "Nelumbonaceae", price: 22.00, stock: 8 },
+      { id: 3, name: "Angel Trumpet", icon: "🌺", imageType: "emoji", family: "Solanaceae", price: 28.50, stock: 12 },
+      { id: 4, name: "Girasol Botánico", icon: "🌻", imageType: "emoji", family: "Asteraceae", price: 15.00, stock: 65 },
+      { id: 5, name: "Orquídea Silvestre", icon: "🪻", imageType: "emoji", family: "Orchidaceae", price: 35.00, stock: 5 }
     ];
 
     let promotions = JSON.parse(localStorage.getItem('lunarBloomPromotions')) || [
@@ -564,9 +721,91 @@
       sunday: { open: "10:00", close: "14:00", isOpen: false }
     };
 
+    let changeLogs = JSON.parse(localStorage.getItem('lunarBloomLogs')) || [
+      { category: 'dashboard', text: 'El panel de administración fue iniciado con éxito.', timestamp: '10/10/2026, 09:00:00 AM' }
+    ];
+
+    let currentLogFilter = 'todos';
+
+    function addLog(category, text) {
+      const now = new Date();
+      const timestamp = now.toLocaleString('es-ES', { 
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+      });
+
+      changeLogs.unshift({ category, text, timestamp });
+      localStorage.setItem('lunarBloomLogs', JSON.stringify(changeLogs));
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filtered = currentLogFilter === 'todos' 
+        ? changeLogs 
+        : changeLogs.filter(l => l.category === currentLogFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs py-8 text-[#999A57]">No hay cambios registrados en este apartado.</div>`;
+        return;
+      }
+
+      filtered.forEach(log => {
+        const div = document.createElement('div');
+        div.className = 'p-4 bg-[#F8F6F2] rounded-2xl border border-[#F3EDE2] flex justify-between items-center gap-4';
+        
+        let categoryName = log.category.toUpperCase();
+        if (log.category === 'stock') categoryName = 'INVENTARIO / STOCK';
+        if (log.category === 'precios') categoryName = 'PRECIOS';
+        if (log.category === 'ofertas') categoryName = 'OFERTAS Y CUPONES';
+        if (log.category === 'horarios') categoryName = 'HORARIOS';
+        if (log.category === 'cuenta') categoryName = 'MI CUENTA';
+
+        div.innerHTML = `
+          <div class="flex flex-col gap-1">
+            <span class="text-[10px] font-bold text-[#A16A84] bg-[#F9BDB0] px-2 py-0.5 rounded-md w-fit">${categoryName}</span>
+            <span class="text-xs font-medium text-[#232215]">${log.text}</span>
+          </div>
+          <span class="text-[11px] font-semibold text-[#999A57] whitespace-nowrap">🕒 ${log.timestamp}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterLogs(category, btnElement) {
+      currentLogFilter = category;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+      if (btnElement) btnElement.classList.add('active-tab');
+
+      const titleEl = document.getElementById('logsTitle');
+      if (titleEl) {
+        if (category === 'todos') titleEl.textContent = 'Historial Completo de Actividades';
+        else titleEl.textContent = `Cambios en el apartado: ${category.toUpperCase()}`;
+      }
+
+      renderLogs();
+    }
+
+    function initDashCarousel() {
+      const slides = document.querySelectorAll('#dashboardCarousel .dash-slide');
+      if (slides.length === 0) return;
+
+      let currentSlide = 0;
+
+      setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 3500);
+    }
+
     function saveInventory() {
       localStorage.setItem('lunarBloomInventory', JSON.stringify(flowerInventory));
       renderNotifications();
+      renderPricesTable();
     }
 
     function savePromotions() {
@@ -582,6 +821,10 @@
       if (clickedElement) {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         clickedElement.classList.add('active');
+      }
+
+      if (pageId === 'resumen') {
+        renderLogs();
       }
     }
 
@@ -655,33 +898,132 @@
       }
 
       updateAvatarDisplay();
+      addLog('cuenta', `Se actualizó la información del perfil del usuario "${newName}".`);
       showToast("✨ Perfil actualizado correctamente");
     }
 
+    /* RENDER Y ACCIONES DE INVENTARIO */
     function renderStockTable() {
       const tbody = document.getElementById('stock-table-body');
       tbody.innerHTML = '';
+
+      if (flowerInventory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-xs py-4 text-[#999A57]">No hay flores en el inventario.</td></tr>`;
+        updateStats();
+        return;
+      }
+
       flowerInventory.forEach(item => {
+        let imgDisplay = '';
+        if (item.imageType === 'image' || (item.icon && item.icon.startsWith('data:image'))) {
+          imgDisplay = `<img src="${item.icon}" class="flower-img-thumb" alt="${item.name}">`;
+        } else {
+          imgDisplay = `<span class="text-xl">${item.icon || '🌸'}</span>`;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${item.icon} ${item.name}</td>
+          <td>${imgDisplay}</td>
+          <td class="font-semibold">${item.name}</td>
           <td>${item.family}</td>
           <td class="font-bold text-[#FC9C51]">${item.stock} uds</td>
-          <td><input type="number" class="input-inline" style="width: 90px;" id="stock-${item.id}" value="${item.stock}"></td>
-          <td><button class="btn-secondary" onclick="updateStock(${item.id})">Guardar</button></td>
+          <td><input type="number" class="input-inline" style="width: 80px;" id="stock-${item.id}" value="${item.stock}"></td>
+          <td>
+            <div class="flex gap-2">
+              <button class="btn-secondary" onclick="updateStock(${item.id})">Guardar</button>
+              <button class="btn-danger" onclick="deleteFlower(${item.id})">Eliminar</button>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
       updateStats();
     }
 
+    function addFlower() {
+      const nameInput = document.getElementById('newFlowerName');
+      const familyInput = document.getElementById('newFlowerFamily');
+      const priceInput = document.getElementById('newFlowerPrice');
+      const stockInput = document.getElementById('newFlowerStock');
+      const imgInput = document.getElementById('newFlowerImg');
+
+      const name = nameInput.value.trim();
+      const family = familyInput.value.trim() || 'General';
+      const price = parseFloat(priceInput.value);
+      const stock = parseInt(stockInput.value);
+
+      if (!name) {
+        showToast("⚠️ Ingresa el nombre de la flor");
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        showToast("⚠️ Ingresa un precio válido");
+        return;
+      }
+      if (isNaN(stock) || stock < 0) {
+        showToast("⚠️ Ingresa un stock válido");
+        return;
+      }
+
+      const createAndSave = (iconValue, imgType) => {
+        const newFlower = {
+          id: Date.now(),
+          name: name,
+          family: family,
+          price: price,
+          stock: stock,
+          icon: iconValue,
+          imageType: imgType
+        };
+
+        flowerInventory.push(newFlower);
+        saveInventory();
+        renderStockTable();
+
+        addLog('stock', `Se registró una nueva flor: "${name}" con un stock de ${stock} unidades y un precio de $${price.toFixed(2)}.`);
+
+        nameInput.value = '';
+        familyInput.value = '';
+        priceInput.value = '';
+        stockInput.value = '';
+        imgInput.value = '';
+
+        showToast(`✨ Flor "${name}" registrada con éxito`);
+      };
+
+      if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          createAndSave(e.target.result, 'image');
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+      } else {
+        createAndSave('🌸', 'emoji');
+      }
+    }
+
+    function deleteFlower(id) {
+      const flower = flowerInventory.find(f => f.id === id);
+      if (!flower) return;
+
+      if (confirm(`¿Estás seguro de eliminar "${flower.name}" del inventario?`)) {
+        flowerInventory = flowerInventory.filter(f => f.id !== id);
+        saveInventory();
+        renderStockTable();
+        addLog('stock', `Se ha eliminado la flor "${flower.name}" del inventario.`);
+        showToast(`🗑️ "${flower.name}" fue eliminada del inventario`);
+      }
+    }
+
     function updateStock(id) {
       const val = parseInt(document.getElementById(`stock-${id}`).value);
       const flower = flowerInventory.find(f => f.id === id);
       if (flower && !isNaN(val) && val >= 0) {
+        const oldStock = flower.stock;
         flower.stock = val;
         saveInventory();
         renderStockTable();
+        addLog('stock', `Se ajustó el stock de "${flower.name}" de ${oldStock} a ${val} unidades.`);
         showToast(`Stock de ${flower.name} actualizado`);
       }
     }
@@ -689,6 +1031,11 @@
     function renderPricesTable() {
       const tbody = document.getElementById('prices-table-body');
       tbody.innerHTML = '';
+
+      if (flowerInventory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-xs py-4 text-[#999A57]">No hay productos registrados.</td></tr>`;
+        return;
+      }
 
       const activePromo = promotions.find(p => p.active);
 
@@ -701,9 +1048,16 @@
                           <span class="font-bold text-[#FC9C51]">$${discountedPrice.toFixed(2)} (-${activePromo.discount}%)</span>`;
         }
 
+        let imgDisplay = '';
+        if (item.imageType === 'image' || (item.icon && item.icon.startsWith('data:image'))) {
+          imgDisplay = `<img src="${item.icon}" class="flower-img-thumb mr-2" alt="${item.name}">`;
+        } else {
+          imgDisplay = `<span class="text-xl mr-2">${item.icon || '🌸'}</span>`;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${item.icon} ${item.name}</td>
+          <td><div class="flex items-center">${imgDisplay} <span>${item.name}</span></div></td>
           <td>${priceDisplay}</td>
           <td><input type="number" step="0.5" class="input-inline" style="width: 90px;" id="price-${item.id}" value="${item.price}"></td>
           <td><button class="btn-secondary" onclick="updatePrice(${item.id})">Actualizar</button></td>
@@ -716,9 +1070,11 @@
       const val = parseFloat(document.getElementById(`price-${id}`).value);
       const flower = flowerInventory.find(f => f.id === id);
       if (flower && !isNaN(val) && val > 0) {
+        const oldPrice = flower.price;
         flower.price = val;
         saveInventory();
         renderPricesTable();
+        addLog('precios', `Se ha actualizado el precio de "${flower.name}" de $${oldPrice.toFixed(2)} a $${val.toFixed(2)}.`);
         showToast(`Precio de ${flower.name} actualizado`);
       }
     }
@@ -749,6 +1105,8 @@
       promotions.push(newPromo);
       savePromotions();
       renderPromotionsTable();
+
+      addLog('ofertas', `En el apartado promociones se ha ingresado un nuevo descuento: "${name}" (${discount}%).`);
 
       nameInput.value = '';
       discountInput.value = '';
@@ -783,6 +1141,8 @@
       promotions.forEach(p => {
         if (p.id === id) {
           p.active = !p.active;
+          const statusText = p.active ? 'activó' : 'desactivó';
+          addLog('ofertas', `Se ${statusText} la promoción "${p.name}".`);
         } else {
           p.active = false;
         }
@@ -845,6 +1205,7 @@
       scheduleData.sunday.close = document.getElementById('sunClose').value;
 
       localStorage.setItem('lunarBloomSchedule', JSON.stringify(scheduleData));
+      addLog('horarios', `Se han actualizado y guardado los horarios de atención semanales.`);
       showToast('⏰ Horarios actualizados con éxito');
     }
 
@@ -905,6 +1266,7 @@
       saveInventory();
       savePromotions();
       saveSchedule();
+      addLog('dashboard', `Se guardaron masivamente todos los cambios en LocalStorage.`);
       showToast('✨ Cambios guardados en LocalStorage');
     }
 
@@ -921,6 +1283,8 @@
       renderPromotionsTable();
       loadScheduleInputs();
       loadUserProfile();
+      initDashCarousel();
+      renderLogs();
     };
   </script>
 </body>
