@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret Garden - Carrito de Compras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Paleta de Colores oficial */
+      --color-mauve-dust: #CB96BA; /* Malva suave */
+      --color-bluebell-frost: #B0B3D6; /* Azul lavanda */
+      --color-venus-flower: #E0E4E7; /* Gris perla */
+      --color-green-beryl: #D0DDC4; /* Verde menta pálido */
+      --color-duck-egg: #9BBCAC; /* Verde agua suave */
+      --color-forest-frolic: #77A39A; /* Verde bosque */
+      
+      --color-dark-green: var(--color-forest-frolic);
+      --color-white: #FFFFFF;
+      --color-bg-light: #FBF9F6;
+      --color-card-bg: var(--color-venus-flower);
+      --color-text-dark: #3A3A3A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--color-bg-light);
+      color: var(--color-text-dark);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .top-banner {
+      background-color: var(--color-duck-egg);
+      color: var(--color-white);
+      padding: 6px 20px;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top-banner a {
+      color: var(--color-venus-flower);
+      font-weight: 600;
+    }
+
+    .top-banner a:hover {
+      color: var(--color-mauve-dust);
+      text-decoration: underline;
+    }
+
+    header {
+      background-color: var(--color-white);
+      border-bottom: 2px solid var(--color-mauve-dust);
+      padding: 12px 30px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      display: grid;
+      line-height: 1;
+    }
+
+    .brand-logo .top {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-mauve-dust);
+      letter-spacing: 2px;
+    }
+
+    .brand-logo .bottom {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+      letter-spacing: 2px;
+    }
+
+    nav {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: end;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-forest-frolic);
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--color-mauve-dust);
+    }
+
+    .nav-btn {
+      background-color: var(--color-mauve-dust);
+      color: var(--color-white);
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--color-forest-frolic);
+    }
+
+    .user-profile-badge {
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--color-venus-flower);
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--color-green-beryl);
+      cursor: pointer;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--color-mauve-dust) 0%, var(--color-duck-egg) 100%);
+      color: var(--color-white);
+      padding: 24px 20px;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      gap: 4px;
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-green-beryl);
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--color-white);
+    }
+
+    .cart-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 850px) {
+      .cart-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cart-items-section {
+      background-color: var(--color-card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #EAECEF;
+      display: grid;
+      gap: 16px;
+    }
+
+    .cart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+      border-bottom: 2px solid var(--color-mauve-dust);
+      padding-bottom: 8px;
+    }
+
+    .cart-table-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+      text-transform: uppercase;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--color-green-beryl);
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #EAECEF;
+      font-size: 12px;
+    }
+
+    .item-details {
+      display: grid;
+      grid-template-columns: 45px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .item-img {
+      width: 45px;
+      height: 45px;
+      background-color: var(--color-white);
+      border-radius: 8px;
+      display: grid;
+      place-content: center;
+      font-size: 20px;
+      overflow: hidden;
+      border: 1px solid var(--color-green-beryl);
+    }
+
+    .item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: var(--color-forest-frolic);
+    }
+
+    .quantity-control {
+      display: grid;
+      grid-template-columns: 24px 30px 24px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .qty-btn {
+      background-color: var(--color-green-beryl);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+      height: 24px;
+      line-height: 24px;
+    }
+
+    .qty-btn:hover {
+      background-color: var(--color-bluebell-frost);
+      color: var(--color-white);
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: var(--color-mauve-dust);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .btn-remove:hover {
+        color: var(--color-forest-frolic);
+    }
+
+    .cart-summary-section {
+      background-color: var(--color-card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #EAECEF;
+      display: grid;
+      gap: 16px;
+    }
+
+    .summary-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+      border-bottom: 2px solid var(--color-mauve-dust);
+      padding-bottom: 8px;
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      font-size: 13px;
+      color: var(--color-text-dark);
+    }
+
+    .wholesale-badge {
+      background-color: var(--color-green-beryl);
+      color: var(--color-forest-frolic);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px dashed var(--color-duck-egg);
+    }
+
+    .payment-methods {
+      display: grid;
+      gap: 8px;
+    }
+
+    .payment-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-forest-frolic);
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .payment-option {
+      background-color: var(--color-white);
+      border: 1px solid var(--color-green-beryl);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+      display: grid;
+      gap: 4px;
+      align-items: center;
+      color: var(--color-forest-frolic);
+    }
+
+    .payment-option.selected {
+      border: 2px solid var(--color-mauve-dust);
+      background-color: #FBF4F8;
+      font-weight: 700;
+      color: var(--color-mauve-dust);
+    }
+
+    .btn-checkout {
+      background-color: var(--color-mauve-dust);
+      color: var(--color-white);
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn-checkout:hover {
+      background-color: var(--color-forest-frolic);
+    }
+
+    .extra-banner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .extra-card {
+      background-color: var(--color-white);
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--color-green-beryl);
+      font-size: 11px;
+      display: grid;
+      gap: 4px;
+      color: var(--color-text-dark);
+    }
+
+    .extra-card strong {
+        color: var(--color-mauve-dust);
+    }
+
+    .extra-card a {
+      color: var(--color-forest-frolic);
+      font-weight: 700;
+    }
+
+    .extra-card a:hover {
+        color: var(--color-bluebell-frost);
+    }
+
+    footer {
+      background-color: var(--color-forest-frolic);
+      color: var(--color-venus-flower);
+      padding: 30px 20px 15px 20px;
+      margin-top: 30px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      font-size: 12px;
+    }
+
+    .footer-col {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .footer-col h4 {
+      color: var(--color-green-beryl);
+      font-size: 13px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: grid;
+      gap: 4px;
+    }
+
+    .footer-col a:hover {
+      color: var(--color-mauve-dust);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 11px;
+      color: var(--color-duck-egg);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-banner">
+    <div>
+      🐝 <strong>Apoya la conservación ambiental:</strong> 
+      <a href="https://www.worldwildlife.org/" target="_blank" rel="noopener">Donar a WWF / Proteger Abejas ↗</a>
+    </div>
+    <div style="text-align: right;">
+      🌱 ¿Quieres aprender a cultivar? 
+      <a href="https://www.rhs.org.uk/advice/gardening-for-beginners" target="_blank" rel="noopener">Curso Gratis de Jardinería ↗</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand-logo">
+      <span class="top">SECRET</span>
+      <span class="bottom">GARDEN</span>
+    </div>
+
+    <nav>
+      <a href="pagCliente.html" class="nav-link">Inicio</a>
+      <a href="pagCliente.html" class="nav-link">Catálogo</a>
+      <a href="pro2.html" class="nav-link" style="color: var(--color-bluebell-frost); font-weight:700;">Panel Admin</a>
+      
+      <div id="user-nav-container"></div>
+    </nav>
+  </header>
+
+  <section class="page-header">
+    <h1>Carrito de Compras</h1>
+    <p>Revisa tus flores, semillas seleccionadas y aprovecha nuestros descuentos por mayoreo.</p>
+  </section>
+
+  <main class="cart-container">
+    
+    <section class="cart-items-section">
+      <h2 class="cart-title">Tus Productos Agregados</h2>
+
+      <div class="cart-table-header">
+        <span>Producto</span>
+        <span>Precio</span>
+        <span>Cantidad</span>
+        <span>Subtotal</span>
+        <span></span>
+      </div>
+
+      <div id="cart-list" style="display: grid; gap: 8px;">
+        <!-- Se genera dinámicamente con JS -->
+      </div>
+
+      <div class="extra-banner-grid">
+        <div class="extra-card">
+          <strong>🐝 Impacto Ambiental</strong>
+          <p>Con tu compra apoyas programas ecológicos.</p>
+          <a href="https://www.worldwildlife.org/" target="_blank">Saber más ↗</a>
+        </div>
+        <div class="extra-card">
+          <strong>🌱 Jardinería en Casa</strong>
+          <p>Guía paso a paso para sembrar tus semillas.</p>
+          <a href="https://www.rhs.org.uk/advice/gardening-for-beginners" target="_blank">Ir al Curso ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <aside class="cart-summary-section">
+      <h2 class="summary-title">Resumen del Pedido</h2>
+
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span id="summary-subtotal">$0.00</span>
+      </div>
+
+      <div class="wholesale-badge" id="wholesale-container">
+        <span id="wholesale-text">📦 Agrega 5 o más unidades para 15% de descuento por mayoreo</span>
+      </div>
+
+      <div class="summary-row" id="discount-row" style="display: none; color: var(--color-mauve-dust); font-weight: 700;">
+        <span>Descuento Mayoreo (15%):</span>
+        <span id="summary-discount">-$0.00</span>
+      </div>
+
+      <div class="summary-row" style="font-size: 16px; font-weight: 700; color: var(--color-forest-frolic); border-top: 1px solid var(--color-mauve-dust); padding-top: 8px;">
+        <span>Total:</span>
+        <span id="summary-total">$0.00</span>
+      </div>
+
+      <div class="payment-methods">
+        <span class="payment-title">Seleccionar Método de Pago:</span>
+        <div class="payment-options">
+          <div class="payment-option selected" onclick="selectPayment(this)">
+            <span>💳 Tarjeta</span>
+          </div>
+          <div class="payment-option" onclick="selectPayment(this)">
+            <span>📱 PayPal</span>
+          </div>
+          <div class="payment-option" onclick="selectPayment(this)">
+            <span>💵 Efectivo / OXXO</span>
+          </div>
+          <div class="payment-option" onclick="selectPayment(this)">
+            <span>🏦 Transferencia</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-checkout" onclick="processCheckout()">Comprar Ya 🛍️</button>
+    </aside>
+
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-col">
+        <h4>Secret Garden</h4>
+        <p>Floristería de autor, semillas orgánicas y conservación del planeta.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Impacto Verde</h4>
+        <ul>
+          <li><a href="https://www.worldwildlife.org/" target="_blank">Salva a las Abejas</a></li>
+          <li><a href="https://www.worldwildlife.org/" target="_blank">Proyectos de Ecología</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Aprende</h4>
+        <ul>
+          <li><a href="https://www.rhs.org.uk/advice/gardening-for-beginners" target="_blank">Curso Cuida tu Jardín</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Secret Garden. Todos los derechos reservados. Sincronizado con Panel Admin pro2.html.
+    </div>
+  </footer>
+
+  <script>
+    function getCart() {
+      const rawCart = JSON.parse(localStorage.getItem('secretGardenCart')) || [
+        { id: 101, name: "Ramo Silvestre Sol Naciente", price: 35.00, quantity: 2, image: "" },
+        { id: 103, name: "Semillas de Lavanda Francesa", price: 8.50, quantity: 3, image: "" }
+      ];
+      // Normalizar objetos para que tengan tanto 'quantity' como 'qty'
+      return rawCart.map(item => ({
+        ...item,
+        quantity: item.quantity || item.qty || 1,
+        qty: item.quantity || item.qty || 1
+      }));
+    }
+
+    let cart = getCart();
+
+    function saveCart() {
+      localStorage.setItem('secretGardenCart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-list');
+      container.innerHTML = '';
+      cart = getCart();
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding: 20px; color: #888;">Tu carrito está vacío. <a href="pagCliente.html" style="color:var(--color-mauve-dust); font-weight:bold;">Ir a la tienda</a></p>`;
+        updateSummary(0, 0);
+        return;
+      }
+
+      let subtotal = 0;
+      let totalItemsCount = 0;
+
+      cart.forEach((item, index) => {
+        const itemQty = item.quantity || item.qty || 1;
+        const itemPrice = parseFloat(item.price) || 0;
+        const itemSubtotal = itemPrice * itemQty;
+        
+        subtotal += itemSubtotal;
+        totalItemsCount += itemQty;
+
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+
+        const imageContent = item.image 
+          ? `<img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.parentElement.innerHTML='🌸';">`
+          : (item.icon || '🌸');
+
+        row.innerHTML = `
+          <div class="item-details">
+            <div class="item-img">${imageContent}</div>
+            <span class="item-name">${item.name}</span>
+          </div>
+          <div style="color: var(--color-forest-frolic);">$${itemPrice.toFixed(2)}</div>
+          <div class="quantity-control">
+            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+            <span style="color: var(--color-text-dark); font-weight: 600; font-size: 13px;">${itemQty}</span>
+            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+          </div>
+          <div style="font-weight:700; color: var(--color-mauve-dust);">$${itemSubtotal.toFixed(2)}</div>
+          <button class="btn-remove" onclick="removeItem(${index})">✕</button>
+        `;
+        container.appendChild(row);
+      });
+
+      updateSummary(subtotal, totalItemsCount);
+    }
+
+    function changeQty(index, change) {
+      let currentQty = cart[index].quantity || cart[index].qty || 1;
+      currentQty += change;
+      
+      if (currentQty <= 0) {
+        cart.splice(index, 1);
+      } else {
+        cart[index].quantity = currentQty;
+        cart[index].qty = currentQty;
+      }
+      saveCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+    }
+
+    function updateSummary(subtotal, totalItemsCount) {
+      const subtotalEl = document.getElementById('summary-subtotal');
+      const discountRow = document.getElementById('discount-row');
+      const discountEl = document.getElementById('summary-discount');
+      const totalEl = document.getElementById('summary-total');
+      const wholesaleText = document.getElementById('wholesale-text');
+
+      subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+      let discount = 0;
+      if (totalItemsCount >= 5 && subtotal > 0) {
+        discount = subtotal * 0.15;
+        discountRow.style.display = 'grid';
+        discountEl.textContent = `-$${discount.toFixed(2)}`;
+        wholesaleText.textContent = `🎉 ¡Descuento del 15% aplicado por comprar 5 o más artículos!`;
+      } else {
+        discountRow.style.display = 'none';
+        wholesaleText.textContent = `📦 Agrega 5 o más unidades para 15% de descuento por mayoreo`;
+      }
+
+      const total = subtotal - discount;
+      totalEl.textContent = `$${total.toFixed(2)}`;
+    }
+
+    function selectPayment(element) {
+      document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    function processCheckout() {
+      if (cart.length === 0) {
+        alert('Tu carrito está vacío.');
+        return;
+      }
+      alert('¡Gracias por tu compra en Secret Garden! Tu pedido ha sido procesado con éxito.');
+      cart = [];
+      saveCart();
+    }
+
+    function checkUserSession() {
+      const currentUser = localStorage.getItem('secretGardenUser') || JSON.parse(localStorage.getItem('currentUser'))?.username;
+      const container = document.getElementById('user-nav-container');
+
+      if (currentUser) {
+        container.innerHTML = `
+          <div class="user-profile-badge" onclick="alert('Perfil de usuario: ${currentUser}')">
+            <span>👤</span>
+            <span style="font-size:12px; font-weight:600; color:var(--color-forest-frolic);">${currentUser}</span>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <a href="pagCliente.html" class="nav-btn">Iniciar Sesión / Registro</a>
+        `;
+      }
+    }
+
+    window.onload = function() {
+      checkUserSession();
+      renderCart();
+    };
+  </script>
+</body>
+</html>
