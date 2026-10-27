@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florería Lunar Bloom - Acceso</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --color-mauve-dust: #CB96BA;
+            --color-bluebell-frost: #B0B3D6;
+            --color-venus-flower: #E0E4E7;
+            --color-green-beryl: #D0DDC4;
+            --color-duck-egg: #9BBCAC;
+            --color-forest-frolic: #77A39A;
+            --color-white: #FFFFFF;
+            --color-text-dark: #2A3835;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body.login-body {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--color-venus-flower);
+        }
+
+        /* Carrusel en pantalla completa como fondo */
+        .background-carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .background-carousel .carousel-slides {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .background-carousel .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .background-carousel .slide.active {
+            opacity: 1;
+        }
+
+        /* Capa decorativa suave sobre el carrusel */
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(119, 163, 154, 0.45) 0%, rgba(155, 188, 172, 0.55) 100%);
+            z-index: 2;
+        }
+
+        /* Layout dividido: Bienvenida a la izquierda, Formulario a la derecha */
+        .login-layout {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 0 10%;
+            box-sizing: border-box;
+        }
+
+        /* Sección de Bienvenida */
+        .welcome-section {
+            color: var(--color-white);
+            max-width: 450px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-logo-hero {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 3px solid var(--color-mauve-dust);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
+        }
+
+        .welcome-title {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            color: var(--color-white);
+            letter-spacing: 1px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: var(--color-venus-flower);
+            font-weight: 400;
+        }
+
+        /* Tarjeta SÓLIDA sin transparencia */
+        .auth-card {
+            width: 420px;
+            background-color: var(--color-venus-flower); /* 100% Sólido */
+            border-radius: 28px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 40px rgba(42, 56, 53, 0.25);
+            border: 3px solid var(--color-duck-egg);
+            color: var(--color-text-dark);
+        }
+
+        .auth-form h2 {
+            font-size: 1.8rem;
+            color: var(--color-forest-frolic);
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .question-text {
+            font-size: 0.85rem;
+            color: var(--color-forest-frolic);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        /* Grupos de Entradas */
+        .input-field-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .input-field-group label {
+            font-size: 0.85rem;
+            color: var(--color-forest-frolic);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .input-field-group input {
+            background: var(--color-white);
+            border: 2px solid var(--color-green-beryl);
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: var(--color-text-dark);
+            outline: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field-group input::placeholder {
+            color: var(--color-duck-egg);
+        }
+
+        .input-field-group input:focus {
+            border-color: var(--color-mauve-dust);
+            box-shadow: 0 0 0 3px rgba(203, 150, 186, 0.25);
+        }
+
+        /* Checkbox Recordarme */
+        .remember-row {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--color-forest-frolic);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .remember-row input {
+            margin-right: 8px;
+            accent-color: var(--color-forest-frolic);
+        }
+
+        /* Botones Principales */
+        .btn-purple-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--color-forest-frolic) 0%, var(--color-duck-egg) 100%);
+            color: var(--color-white);
+            border: none;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(119, 163, 154, 0.35);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-purple-primary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(90deg, var(--color-mauve-dust) 0%, var(--color-bluebell-frost) 100%);
+            box-shadow: 0 10px 22px rgba(203, 150, 186, 0.4);
+        }
+
+        /* Enlaces Inferiores */
+        .card-footer-links {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--color-text-dark);
+        }
+
+        .card-footer-links a {
+            color: var(--color-mauve-dust);
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .card-footer-links .forgot-link {
+            color: var(--color-forest-frolic);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: color 0.2s;
+        }
+
+        .card-footer-links .forgot-link:hover {
+            color: var(--color-mauve-dust);
+        }
+
+        .status-message {
+            margin-top: 16px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+            color: var(--color-forest-frolic);
+        }
+
+        /* Diseño Responsivo */
+        @media (max-width: 900px) {
+            .login-layout {
+                flex-direction: column;
+                justify-content: center;
+                padding: 20px;
+                gap: 25px;
+            }
+
+            .welcome-section {
+                text-align: center;
+            }
+
+            .welcome-title {
+                font-size: 2.8rem;
+            }
+
+            .auth-card {
+                width: 100%;
+                max-width: 380px;
+                padding: 30px 24px;
+            }
+        }
+    </style>
+</head>
+<body class="login-body">
+
+    <!-- Carrusel de fondo -->
+    <div class="background-carousel">
+        <div class="carousel-slides">
+            <img src="fondologin1.jfif" alt="Fondo 1" class="slide active">
+            <img src="fondologin2.jfif" alt="Fondo 2" class="slide">
+            <img src="fondologin3.jfif" alt="Fondo 3" class="slide">
+            <img src="fondologin4.jfif" alt="Fondo 4" class="slide">
+            <img src="fondologin5.jfif" alt="Fondo 5" class="slide">
+        </div>
+        <div class="carousel-overlay"></div>
+    </div>
+
+    <!-- Layout del Login estilo imagen -->
+    <main class="login-layout">
+
+        <!-- Lado Izquierdo: Bienvenida -->
+        <section class="welcome-section">
+            <div class="brand-logo-container">
+                <img src="logo.jpg" alt="Logo Lunar Bloom" class="brand-logo-hero">
+            </div>
+            <h1 class="welcome-title">Welcome</h1>
+            <p class="welcome-subtitle">¿Acaso no son las flores, las estrellas de la tierra?</p>
+        </section>
+
+        <!-- Lado Derecho: Formularios Sólidos -->
+        <section class="auth-card">
+
+            <!-- FORMULARIO DE INICIO DE SESIÓN -->
+            <form id="loginForm" class="auth-form">
+                <h2>Iniciar Sesión</h2>
+
+                <div class="input-field-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required placeholder="User">
+                </div>
+
+                <div class="input-field-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+
+                <div class="remember-row">
+                    <label><input type="checkbox" id="rememberMe"> Remember me</label>
+                </div>
+
+                <button type="submit" class="btn-purple-primary">SIGN IN</button>
+
+                <div class="card-footer-links">
+                    <span>Don't have an account? <a href="#" id="toRegisterLink">Sign Up</a></span>
+                    <a href="#" id="forgotPasswordLink" class="forgot-link">Forgot Password</a>
+                </div>
+            </form>
+
+            <!-- FORMULARIO DE REGISTRO -->
+            <form id="registerForm" class="auth-form" hidden>
+                <h2>Crear Cuenta</h2>
+
+                <div class="input-field-group">
+                    <label for="regUsername">Nombre de usuario</label>
+                    <input type="text" id="regUsername" required placeholder="Tu usuario">
+                </div>
+
+                <div class="input-field-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••">
+                </div>
+
+                <div class="input-field-group">
+                    <label for="regQuestion">Pregunta de seguridad</label>
+                    <input type="text" id="regQuestion" required placeholder="Tu pregunta">
+                </div>
+
+                <div class="input-field-group">
+                    <label for="regAnswer">Respuesta de seguridad</label>
+                    <input type="text" id="regAnswer" required placeholder="Tu respuesta">
+                </div>
+
+                <button type="submit" class="btn-purple-primary">Registrarse</button>
+
+                <div class="card-footer-links">
+                    <span>¿Ya tienes cuenta? <a href="#" id="toLoginLink">Inicia sesión</a></span>
+                </div>
+            </form>
+
+            <!-- FORMULARIO DE RECUPERACIÓN -->
+            <form id="recoveryForm" class="auth-form" hidden>
+                <h2>Recuperar Contraseña</h2>
+                <p id="recoveryQuestionText" class="question-text"></p>
+
+                <div class="input-field-group">
+                    <label for="recoveryAnswer">Tu respuesta</label>
+                    <input type="text" id="recoveryAnswer" required placeholder="Escribe tu respuesta">
+                </div>
+
+                <button type="submit" class="btn-purple-primary">Verificar respuesta</button>
+
+                <div class="card-footer-links">
+                    <a href="#" id="cancelRecoveryLink" class="forgot-link">Volver al inicio de sesión</a>
+                </div>
+            </form>
+
+            <p id="statusMessage" class="status-message" aria-live="polite"></p>
+
+        </section>
+
+    </main>
+
+    <!-- SCRIPT FUSIONADO -->
+    <script>
+        // Inicializar cuenta Admin de prueba en LocalStorage
+        (function initAdminAccount() {
+            let users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+            const adminExists = users.some(u => u.username.toLowerCase() === 'admin');
+            
+            if (!adminExists) {
+                users.push({
+                    username: 'admin',
+                    password: 'admin123',
+                    question: '¿Cuál es el nombre de la florería?',
+                    answer: 'lunarbloom',
+                    role: 'admin'
+                });
+                localStorage.setItem('lunarBloomUsers', JSON.stringify(users));
+            }
+        })();
+
+        // Control del carrusel de imágenes
+        function initCarousel() {
+            const slides = document.querySelectorAll('.carousel-slides .slide');
+            if (slides.length === 0) return;
+
+            let currentSlide = 0;
+
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 3500); 
+        }
+
+        // Lógica de navegación de formularios e inicio de sesión
+        document.addEventListener('DOMContentLoaded', () => {
+
+            initCarousel();
+
+            const registerForm = document.getElementById('registerForm');
+            const loginForm = document.getElementById('loginForm');
+            const recoveryForm = document.getElementById('recoveryForm');
+            const statusMessage = document.getElementById('statusMessage');
+
+            const toLoginLink = document.getElementById('toLoginLink');
+            const toRegisterLink = document.getElementById('toRegisterLink');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const cancelRecoveryLink = document.getElementById('cancelRecoveryLink');
+
+            if (toLoginLink) {
+                toLoginLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (registerForm) registerForm.hidden = true;
+                    if (loginForm) loginForm.hidden = false;
+                    if (recoveryForm) recoveryForm.hidden = true;
+                    if (statusMessage) statusMessage.textContent = '';
+                });
+            }
+
+            if (toRegisterLink) {
+                toRegisterLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (loginForm) loginForm.hidden = true;
+                    if (registerForm) registerForm.hidden = false;
+                    if (recoveryForm) recoveryForm.hidden = true;
+                    if (statusMessage) statusMessage.textContent = '';
+                });
+            }
+
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const usernameInput = document.getElementById('loginUsername').value.trim();
+                    const users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+                    const user = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
+
+                    if (!user) {
+                        if (statusMessage) {
+                            statusMessage.textContent = 'Ingresa un nombre de usuario válido en la casilla primero.';
+                            statusMessage.style.color = '#CB96BA';
+                        }
+                        return;
+                    }
+
+                    document.getElementById('recoveryQuestionText').textContent = user.question;
+                    recoveryForm.dataset.username = user.username;
+                    loginForm.hidden = true;
+                    recoveryForm.hidden = false;
+                    if (statusMessage) statusMessage.textContent = '';
+                });
+            }
+
+            if (cancelRecoveryLink) {
+                cancelRecoveryLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    recoveryForm.hidden = true;
+                    loginForm.hidden = false;
+                    if (statusMessage) statusMessage.textContent = '';
+                });
+            }
+
+            if (registerForm) {
+                registerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('regUsername').value.trim();
+                    const password = document.getElementById('regPassword').value.trim();
+                    const question = document.getElementById('regQuestion').value.trim();
+                    const answer = document.getElementById('regAnswer').value.trim().toLowerCase();
+
+                    let users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+
+                    if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                        statusMessage.textContent = 'El nombre de usuario ya está registrado.';
+                        statusMessage.style.color = '#CB96BA';
+                        return;
+                    }
+
+                    users.push({ username, password, question, answer, role: 'client' });
+                    localStorage.setItem('lunarBloomUsers', JSON.stringify(users));
+
+                    statusMessage.textContent = '¡Cuenta creada con éxito! Ahora inicia sesión.';
+                    statusMessage.style.color = '#77A39A';
+
+                    registerForm.reset();
+                    registerForm.hidden = true;
+                    loginForm.hidden = false;
+                });
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const usernameInput = document.getElementById('loginUsername').value.trim();
+                    const passwordInput = document.getElementById('loginPassword').value.trim();
+
+                    const users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+                    const user = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
+
+                    if (!user) {
+                        statusMessage.textContent = 'Usuario o contraseña incorrectos.';
+                        statusMessage.style.color = '#E53E3E';
+                        return;
+                    }
+
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+
+                    statusMessage.textContent = '¡Inicio de sesión exitoso! Redirigiendo...';
+                    statusMessage.style.color = '#77A39A';
+
+                    setTimeout(() => {
+                        if (user.role === 'admin') {
+                            window.location.href = 'pro2.html';
+                        } else {
+                            window.location.href = 'pagCliente.html';
+                        }
+                    }, 900);
+                });
+            }
+
+            if (recoveryForm) {
+                recoveryForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const answerInput = document.getElementById('recoveryAnswer').value.trim().toLowerCase();
+                    const username = recoveryForm.dataset.username;
+
+                    const users = JSON.parse(localStorage.getItem('lunarBloomUsers')) || [];
+                    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+                    if (user && user.answer === answerInput) {
+                        statusMessage.textContent = `Tu contraseña es: ${user.password}`;
+                        statusMessage.style.color = '#77A39A';
+                    } else {
+                        statusMessage.textContent = 'Respuesta de seguridad incorrecta.';
+                        statusMessage.style.color = '#E53E3E';
+                    }
+                });
+            }
+
+        });
+    </script>
+
+</body>
+</html>

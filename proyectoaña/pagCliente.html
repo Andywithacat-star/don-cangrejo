@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Garden - Botánica & Jardinería</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sgOliveDark: '#77A39A', // Forest Frolic
+                        sgOliveLight: '#D0DDC4', // Green Beryl
+                        sgOrange: '#CB96BA', // Mauve Dust
+                        sgPeach: '#B0B3D6', // Bluebell Frost
+                        sgSoftRose: '#E0E4E7', // Venus Flower
+                        sgBerry: '#9BBCAC' // Duck Egg
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf7; color: #333; }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-rows: auto auto 1fr auto;
+            grid-template-areas:
+                "topbar topbar"
+                "header header"
+                "sidebar main"
+                "footer footer";
+            min-height: 100vh;
+        }
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "topbar"
+                    "header"
+                    "sidebar"
+                    "main"
+                    "footer";
+            }
+        }
+        .area-topbar { grid-area: topbar; }
+        .area-header { grid-area: header; }
+        .area-sidebar { grid-area: sidebar; }
+        .area-main { grid-area: main; }
+        .area-footer { grid-area: footer; }
+        .toast-slide { transition: transform 0.3s ease, opacity 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="grid-layout">
+        <div class="area-topbar bg-sgOliveDark text-white text-xs py-1.5 px-4 flex justify-between items-center z-50">
+            <div class="flex items-center gap-2">
+                <span class="bg-sgOrange text-white font-bold px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider">Ecológico</span>
+                <span class="hidden sm:inline">Apoya al planeta con cada compra</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-medium">
+                <a href="https://www.worldwildlife.org/" target="_blank" rel="noopener noreferrer" class="hover:text-sgPeach transition-colors flex items-center gap-1"><i class="fa-solid fa-earth-americas text-sgPeach"></i> Donar a WWF</a>
+                <span class="text-sgOliveLight">|</span>
+                <a href="https://www.coursera.org/courses?query=gardening" target="_blank" rel="noopener noreferrer" class="hover:text-sgPeach transition-colors flex items-center gap-1"><i class="fa-solid fa-graduation-cap text-sgPeach"></i> Cursos de Jardinería</a>
+            </div>
+        </div>
+
+        <header class="area-header bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <div class="w-9 h-9 rounded-full bg-sgOliveDark flex items-center justify-center text-sgPeach text-lg font-bold group-hover:bg-sgBerry transition-colors">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-extrabold text-sgOliveDark tracking-tight block leading-none">Secret Garden</span>
+                        <span class="text-[10px] text-sgOliveLight font-medium tracking-widest uppercase">Botánica & Flora</span>
+                    </div>
+                </a>
+
+                <div class="flex-1 max-w-md mx-2 hidden md:block">
+                    <div class="relative">
+                        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar ramos, semillas, plantas..." class="w-full bg-gray-50 border border-gray-200 rounded-full py-1.5 pl-9 pr-4 text-xs focus:outline-none focus:border-sgOliveLight text-gray-700">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a href="pro2.html" class="px-2.5 py-1.5 text-xs font-semibold text-sgOliveDark hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1.5" title="Panel Administrador">
+                        <i class="fa-solid fa-sliders text-sgBerry"></i>
+                        <span class="hidden sm:inline">Admin</span>
+                    </a>
+                    <a href="#" id="userProfileBtn" onclick="toggleAuthModal()" class="px-2.5 py-1.5 text-xs font-semibold text-sgOliveDark hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-user text-sgOliveLight"></i>
+                        <span id="userNameDisplay" class="hidden sm:inline">Ingresar</span>
+                    </a>
+                    <a href="carrito.html" class="relative p-2 text-sgOliveDark hover:text-sgBerry transition-colors flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-full w-9 h-9 border border-gray-100" title="Ver Carrito de Compras">
+                        <i class="fa-solid fa-cart-shopping text-sm"></i>
+                        <span id="cartBadge" class="absolute -top-1 -right-1 bg-sgOrange text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <aside class="area-sidebar bg-white border-r border-gray-100 p-4">
+            <div class="sticky top-16">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-sgOliveDark mb-3 flex items-center justify-between">
+                    <span>Categorías</span>
+                    <i class="fa-solid fa-layer-group text-sgOliveLight"></i>
+                </h3>
+                <nav class="space-y-1">
+                    <button onclick="selectCategory('all')" class="cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-white bg-sgOliveDark transition-colors flex items-center justify-between" data-cat="all">
+                        <span>Todos los productos</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
+                    </button>
+                    <button onclick="selectCategory('ramos')" class="cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between" data-cat="ramos">
+                        <span>Ramos de Flores</span>
+                        <i class="fa-solid fa-fan text-sgBerry text-xs"></i>
+                    </button>
+                    <button onclick="selectCategory('semillas de flores')" class="cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between" data-cat="semillas de flores">
+                        <span>Semillas de Flores</span>
+                        <i class="fa-solid fa-spa text-sgOliveLight text-xs"></i>
+                    </button>
+                    <button onclick="selectCategory('semillas de frutas')" class="cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between" data-cat="semillas de frutas">
+                        <span>Semillas de Frutas</span>
+                        <i class="fa-solid fa-apple-whole text-sgOrange text-xs"></i>
+                    </button>
+                    <button onclick="selectCategory('semillas de vegetales')" class="cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between" data-cat="semillas de vegetales">
+                        <span>Semillas de Vegetales</span>
+                        <i class="fa-solid fa-carrot text-sgPeach text-xs"></i>
+                    </button>
+                </nav>
+
+                <div class="mt-6 p-3 bg-gradient-to-br from-sgOliveDark to-sgBerry rounded-xl text-white">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-sgPeach block mb-1">Promoción</span>
+                    <h4 class="text-xs font-bold leading-snug mb-2">Envío gratis en compras mayores a $500</h4>
+                    <a href="https://www.worldwildlife.org/" target="_blank" class="inline-block bg-white text-sgOliveDark text-[10px] font-bold px-2.5 py-1 rounded shadow hover:bg-sgPeach transition-colors">Saber Más</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="area-main p-4 md:p-6 bg-gray-50/50">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+                <div>
+                    <h1 class="text-lg font-bold text-sgOliveDark" id="categoryTitle">Catálogo Completo</h1>
+                    <p class="text-xs text-gray-500">Explora la variedad de ramos, semillas e insumos botánicos</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500">Ordenar por:</span>
+                    <select id="sortSelect" onchange="renderProducts()" class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-700 focus:outline-none">
+                        <option value="default">Recomendados</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="name">Nombre</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"></div>
+        </main>
+
+        <footer class="area-footer bg-sgOliveDark text-white pt-8 pb-4 px-4 border-t border-sgOliveLight/20">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-xs mb-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-sgPeach flex items-center justify-center text-sgOliveDark font-bold text-xs">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <span class="text-sm font-extrabold text-white">Secret Garden</span>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed text-[11px]">Inspirando la reconexión natural mediante la entrega de semillas certificadas y la elaboración de composiciones florales sustentables.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sgPeach uppercase text-[10px] tracking-wider mb-2">Enlaces Directos</h4>
+                    <ul class="space-y-1.5 text-gray-300">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                        <li><a href="carrito.html" class="hover:text-white transition-colors">Carrito de Compras</a></li>
+                        <li><a href="pro2.html" class="hover:text-white transition-colors">Administración Inventario</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sgPeach uppercase text-[10px] tracking-wider mb-2">Impacto & Cursos</h4>
+                    <ul class="space-y-1.5 text-gray-300">
+                        <li><a href="https://www.worldwildlife.org/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">WWF Proyectos</a></li>
+                        <li><a href="https://www.coursera.org/courses?query=gardening" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Formación de Jardinería</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sgPeach uppercase text-[10px] tracking-wider mb-2">Contacto</h4>
+                    <p class="text-gray-300 text-[11px]">contacto@secretgarden.com</p>
+                    <div class="flex gap-2 mt-3">
+                        <a href="#" class="w-7 h-7 rounded-full bg-sgOliveLight/30 flex items-center justify-center hover:bg-sgOrange transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-7 h-7 rounded-full bg-sgOliveLight/30 flex items-center justify-center hover:bg-sgOrange transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-7 h-7 rounded-full bg-sgOliveLight/30 flex items-center justify-center hover:bg-sgOrange transition-colors"><i class="fa-brands fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto border-t border-sgOliveLight/20 pt-3 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-400 gap-2">
+                <p>&copy; 2026 Secret Garden. Todos los derechos reservados.</p>
+                <p>Diseño compacto con paleta oficial de marca</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 bg-sgOliveDark text-white px-4 py-2.5 rounded-xl shadow-lg border border-sgOliveLight flex items-center gap-3 z-50 transform translate-y-20 opacity-0 toast-slide">
+        <div class="w-7 h-7 rounded-full bg-sgOrange flex items-center justify-center text-white text-xs">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <p class="text-xs font-bold" id="toastTitle">¡Producto añadido!</p>
+            <p class="text-[10px] text-sgPeach" id="toastMessage">Se actualizó tu carrito de compras.</p>
+        </div>
+    </div>
+
+    <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl relative">
+            <button onclick="toggleAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-base font-bold text-sgOliveDark mb-1">Mi Cuenta</h3>
+            <p class="text-xs text-gray-500 mb-4">Ingresa tu nombre para personalizar tu sesión</p>
+            <input type="text" id="usernameInput" placeholder="Nombre de usuario" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs mb-3 focus:outline-none focus:border-sgOliveDark">
+            <button onclick="saveUser()" class="w-full bg-sgOliveDark text-white font-semibold py-2 rounded-lg text-xs hover:bg-sgBerry transition-colors">Guardar Sesión</button>
+        </div>
+    </div>
+
+    <script>
+        // Imágenes corregidas y representativas de cada producto
+        const defaultProducts = [
+            { id: 'def_1', name: 'Ramo Silvestre Primaveral', category: 'ramos', price: 450, stock: 12, image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_2', name: 'Ramo de Rosas & Eucalipto', category: 'ramos', price: 680, stock: 8, image: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_3', name: 'Semillas de Girasol Gigante', category: 'semillas de flores', price: 85, stock: 30, image: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_4', name: 'Semillas de Lavanda Francesa', category: 'semillas de flores', price: 95, stock: 25, image: 'https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_5', name: 'Semillas de Fresa Silvestre', category: 'semillas de frutas', price: 110, stock: 20, image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_6', name: 'Semillas de Tomate Cherry', category: 'semillas de vegetales', price: 75, stock: 40, image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_7', name: 'Semillas de Zanahoria Baby', category: 'semillas de vegetales', price: 65, stock: 35, image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=400&q=80' },
+            { id: 'def_8', name: 'Semillas de Sandía Mini', category: 'semillas de frutas', price: 120, stock: 15, image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80' }
+        ];
+
+        let currentCategory = 'all';
+
+        function getFullInventory() {
+            const localData = localStorage.getItem('lunarBloomInventory');
+            let localProducts = [];
+            if (localData) {
+                try {
+                    localProducts = JSON.parse(localData);
+                } catch(e) {
+                    localProducts = [];
+                }
+            }
+            return [...defaultProducts, ...localProducts];
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('secretGardenCart') || '[]');
+            const totalCount = cart.reduce((sum, item) => sum + (item.quantity || item.qty || 1), 0);
+            document.getElementById('cartBadge').textContent = totalCount;
+        }
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-white bg-sgOliveDark transition-colors flex items-center justify-between';
+                } else {
+                    btn.className = 'cat-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between';
+                }
+            });
+            const titles = {
+                'all': 'Catálogo Completo',
+                'ramos': 'Ramos de Flores',
+                'semillas de flores': 'Semillas de Flores',
+                'semillas de frutas': 'Semillas de Frutas',
+                'semillas de vegetales': 'Semillas de Vegetales'
+            };
+            document.getElementById('categoryTitle').textContent = titles[cat] || 'Catálogo';
+            renderProducts();
+        }
+
+        function filterProducts() {
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const sortMode = document.getElementById('sortSelect').value;
+            let inventory = getFullInventory();
+
+            if (currentCategory !== 'all') {
+                inventory = inventory.filter(p => p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
+            }
+
+            if (searchQuery) {
+                inventory = inventory.filter(p => p.name.toLowerCase().includes(searchQuery));
+            }
+
+            if (sortMode === 'price-asc') {
+                inventory.sort((a, b) => a.price - b.price);
+            } else if (sortMode === 'price-desc') {
+                inventory.sort((a, b) => b.price - a.price);
+            } else if (sortMode === 'name') {
+                inventory.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            if (inventory.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-400">
+                        <i class="fa-solid fa-seedling text-3xl mb-2 text-sgOliveLight"></i>
+                        <p class="text-xs font-medium">No se encontraron productos en esta sección.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = inventory.map(product => `
+                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <div class="relative h-32 sm:h-36 overflow-hidden bg-gray-100">
+                        <img src="${product.image || 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=400&q=80'}" 
+                             alt="${product.name}" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                             onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=400&q=80'">
+                        <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-sgOliveDark text-[9px] font-bold px-2 py-0.5 rounded-full capitalize">
+                            ${product.category || 'General'}
+                        </span>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-xs text-gray-800 line-clamp-1 mb-1">${product.name}</h3>
+                            <div class="flex items-center justify-between text-xs mb-2">
+                                <span class="font-extrabold text-sgOliveDark">$${product.price} MXN</span>
+                                <span class="text-[10px] ${product.stock > 0 ? 'text-sgOliveLight' : 'text-sgBerry'} font-medium">
+                                    ${product.stock > 0 ? `Stock: ${product.stock}` : 'Agotado'}
+                                </span>
+                            </div>
+                        </div>
+                        <button onclick="addToCart('${product.id}', '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image}')" 
+                                class="w-full bg-sgOliveDark hover:bg-sgBerry text-white text-[11px] font-semibold py-1.5 px-2 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transform">
+                            <i class="fa-solid fa-cart-plus text-xs"></i>
+                            <span>Agregar</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id, name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('secretGardenCart') || '[]');
+            const existingIndex = cart.findIndex(item => item.id === id);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity = (cart[existingIndex].quantity || cart[existingIndex].qty || 1) + 1;
+                cart[existingIndex].qty = cart[existingIndex].quantity;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1, qty: 1 });
+            }
+
+            localStorage.setItem('secretGardenCart', JSON.stringify(cart));
+            updateCartBadge();
+            showToast(name);
+        }
+
+        function showToast(productName) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = `"${productName}" se añadió al carrito.`;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function toggleAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function saveUser() {
+            const input = document.getElementById('usernameInput');
+            if (input.value.trim() !== '') {
+                localStorage.setItem('secretGardenUser', input.value.trim());
+                checkUser();
+                toggleAuthModal();
+            }
+        }
+
+        function checkUser() {
+            const user = localStorage.getItem('secretGardenUser');
+            if (user) {
+                document.getElementById('userNameDisplay').textContent = user;
+            }
+        }
+
+        window.onload = function() {
+            updateCartBadge();
+            renderProducts();
+            checkUser();
+        };
+    </script>
+</body>
+</html>
